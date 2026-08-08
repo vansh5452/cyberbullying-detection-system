@@ -1,0 +1,125 @@
+import pandas as pd
+import os
+import sys
+
+# Import model training module
+import model
+
+# New dataset entries to make sentence detection clean and accurate
+new_entries = [
+    # Safe / Neutral Sentences (Greetings, compliments, casual chat)
+    ("Good morning everyone, hope you all have a fantastic day ahead!", 0, "Neutral"),
+    ("Hey bro, are we still meeting for lunch today?", 0, "Neutral"),
+    ("Hi buddy, thanks a lot for sending over the study materials.", 0, "Neutral"),
+    ("What's up guys? Anyone up for playing games this evening?", 0, "Neutral"),
+    ("How are you doing today? Hope everything is going well.", 0, "Neutral"),
+    ("What are you working on right now?", 0, "Neutral"),
+    ("Thanks for sharing this, it was really helpful and informative.", 0, "Neutral"),
+    ("Great job on the project presentation, team!", 0, "Neutral"),
+    ("You did an amazing job in the sports day match!", 0, "Neutral"),
+    ("Let's work together on the upcoming assignment.", 0, "Neutral"),
+    ("See you tomorrow at school, take care!", 0, "Neutral"),
+    ("Have a peaceful and wonderful evening!", 0, "Neutral"),
+    ("Happy birthday my friend! Wishing you all the best!", 0, "Neutral"),
+    ("Congratulations on passing your exams with top scores!", 0, "Neutral"),
+    ("I respect your perspective, even though we think differently.", 0, "Neutral"),
+    ("That is a very thoughtful and kind gesture from you.", 0, "Neutral"),
+    ("Welcome to our class! We are excited to learn together.", 0, "Neutral"),
+    ("Can you please explain this topic to me when you get free?", 0, "Neutral"),
+    ("Sure thing, happy to assist you anytime!", 0, "Neutral"),
+    ("This picture looks super cool, love the background!", 0, "Neutral"),
+    ("Hey mate, did you finish reading chapter 4?", 0, "Neutral"),
+    ("Good night everyone, sleep well and rest up!", 0, "Neutral"),
+    ("Thank you teacher for explaining the math concept so clearly.", 0, "Neutral"),
+    ("Let me know if you need any help with your homework.", 0, "Neutral"),
+    ("Awesome work, keep it up!", 0, "Neutral"),
+    ("Hey, how was your weekend? Did you go anywhere fun?", 0, "Neutral"),
+    ("Hi! Long time no see, how have you been?", 0, "Neutral"),
+    ("What a wonderful initiative, proud of our school team!", 0, "Neutral"),
+    ("Take care and stay safe out there.", 0, "Neutral"),
+    ("Let's catch up later after classes end.", 0, "Neutral"),
+    ("Hey dude, check out this cool article I found.", 0, "Neutral"),
+    ("Everything looks great, thanks for the update!", 0, "Neutral"),
+    ("Hope you recover soon from your fever, take rest!", 0, "Neutral"),
+    ("Wish you all the success for your competition!", 0, "Neutral"),
+    ("Hi there! Just wanted to check in on how you're feeling.", 0, "Neutral"),
+    ("That was a funny joke, thanks for making me laugh!", 0, "Neutral"),
+    ("Good evening! Ready for our group revision session?", 0, "Neutral"),
+    ("You are a very talented artist, beautiful drawing!", 0, "Neutral"),
+    ("Let's organize a book swap club in our school.", 0, "Neutral"),
+    ("Thank you for being such a supportive classmate.", 0, "Neutral"),
+    ("Hello how are you doing", 0, "Neutral"),
+    ("Hey what are you doing", 0, "Neutral"),
+    ("Hi how are you my friend", 0, "Neutral"),
+    ("What's up bro how is everything", 0, "Neutral"),
+    ("Good morning my friends", 0, "Neutral"),
+    
+    # Toxic / Bullying / Insults / Threats / Harassment
+    ("You are a complete idiot, stop pretending to be smart.", 1, "Insult"),
+    ("Nobody likes you in this class, just leave.", 1, "Insult"),
+    ("You are so useless, why do you even exist?", 1, "Insult"),
+    ("Shut your mouth, nobody asked for your opinion.", 1, "Insult"),
+    ("Get a life, you worthless loser.", 1, "Insult"),
+    ("You look hideous in that video, delete it right now.", 1, "Insult"),
+    ("I am going to post your private chats online and humiliate you.", 1, "Threat"),
+    ("Watch your back after school, you're gonna pay for this.", 1, "Threat"),
+    ("I will make sure everyone hates you and boycotts you.", 1, "Threat"),
+    ("You are a parasite to this group, get lost.", 1, "Insult"),
+    ("Don't come near us, you creepy freak.", 1, "Insult"),
+    ("You have zero brain cells, total failure.", 1, "Insult"),
+    ("You are such a fattu and coward, scared to face me.", 1, "Insult"),
+    ("Stop talking you gadha, you know nothing.", 1, "Insult"),
+    ("You are completely pagal and mentally unstable.", 1, "Insult"),
+    ("Look at this chomu, thinks he is clever.", 1, "Insult"),
+    ("Go cry in a corner, you pathetic baby.", 1, "Insult"),
+    ("You are disgusting, nobody wants to be your friend.", 1, "Insult"),
+    ("I will hack your account and leak all your messages.", 1, "Threat"),
+    ("You don't belong here, go back to your ugly place.", 1, "Hate Speech"),
+    ("People like you are a burden on society.", 1, "Hate Speech"),
+    ("You are a shameless fraud and a liar.", 1, "Insult"),
+    ("Stop spamming your garbage content, you pathetic clown.", 1, "Insult"),
+    ("I will destroy your reputation in the entire school.", 1, "Threat"),
+    ("Shut up you dumb fucker, nobody cares.", 1, "Insult"),
+    ("Get lost you fucking jerk.", 1, "Insult"),
+    ("You are a piece of trash, stop talking to me.", 1, "Insult"),
+    ("You bitch, stop interfering in my business.", 1, "Insult"),
+    ("You are an asshole, get out of here.", 1, "Insult"),
+    ("Stop being so irritating, you useless creature.", 1, "Insult"),
+    ("Everyone in class thinks you are a joke.", 1, "Insult"),
+    ("I will track you down and teach you a lesson.", 1, "Threat"),
+    ("You are an uneducated fool with no future.", 1, "Insult"),
+    ("Keep your stupid mouth shut or else.", 1, "Threat"),
+    ("You look like a monster, don't show your face again.", 1, "Insult"),
+    ("You are such a loser, always failing at everything.", 1, "Insult"),
+    ("Stop acting like a hero, you're just a cowardly rat.", 1, "Insult"),
+    ("I'm going to leak your photos to everyone.", 1, "Threat"),
+    ("You are a total disgrace to your family and school.", 1, "Insult"),
+    ("Get out of our group chat, nobody invited you.", 1, "Insult")
+]
+
+# Load existing dataset
+dataset_path = 'dataset.csv'
+df = pd.read_csv(dataset_path)
+existing_texts = set(df['text'].str.lower().str.strip())
+
+added_count = 0
+new_rows = []
+
+for text, label, category in new_entries:
+    if text.lower().strip() not in existing_texts:
+        new_rows.append({'text': text, 'label': label, 'category': category})
+        existing_texts.add(text.lower().strip())
+        added_count += 1
+
+if new_rows:
+    new_df = pd.DataFrame(new_rows)
+    updated_df = pd.concat([df, new_df], ignore_index=True)
+    updated_df.to_csv(dataset_path, index=False)
+    print(f"Added {added_count} new entries to {dataset_path}. Total rows: {len(updated_df)}")
+else:
+    print("No new entries added. Dataset is up to date.")
+
+# Retrain the model
+print("Retraining AI Model...")
+model_data = model.train_cyberbullying_model(dataset_path)
+print("Model retrained successfully! Accuracy:", model_data['accuracy'])
