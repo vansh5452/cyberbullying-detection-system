@@ -5,4 +5,4 @@ numpy==2.1.2
 plotly==5.24.1
 audiorecoder==0.0.5
 SpeechRecognition==3.10.4
-rich==10.14.0
+rich>=13.7.0,<14
