@@ -30,3 +30,6 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in_minutes: int
     user: UserOut
+class AdminPromoteRequest(BaseModel):
+    username: str
+    setup_key: str
