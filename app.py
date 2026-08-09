@@ -27,6 +27,33 @@ import plotly.express as px
 import api_client
 from api_client import ApiError
 
+# --- SVG ICON LIBRARY (crisp line icons, replaces emoji for a more polished look) ---
+_ICON_PATHS = {
+    "trending-up": '<polyline points="3,17 9,11 13,15 21,6"/><polyline points="14,6 21,6 21,13"/>',
+    "message-circle": '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+    "shield-check": '<path d="M12 2 L20 5 V11 C20 16.5 16.5 20.5 12 22 C7.5 20.5 4 16.5 4 11 V5 Z"/><polyline points="9,12 11,14 15,10"/>',
+    "alert-triangle": '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    "target": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/>',
+    "cpu": '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="10" y="10" width="4" height="4"/><line x1="9" y1="2" x2="9" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/><line x1="9" y1="18" x2="9" y2="22"/><line x1="15" y1="18" x2="15" y2="22"/><line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/><line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>',
+    "globe": '<circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C15 6.5 15 17.5 12 21 C9 17.5 9 6.5 12 3 Z"/>',
+    "lock": '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V7 a4 4 0 0 1 8 0 v4"/>',
+    "shield": '<path d="M12 2 L20 5 V11 C20 16.5 16.5 20.5 12 22 C7.5 20.5 4 16.5 4 11 V5 Z"/>',
+    "check-circle": '<circle cx="12" cy="12" r="9"/><polyline points="8,12.5 11,15.5 16,9"/>',
+    "x-circle": '<circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/>',
+    "align-left": '<line x1="4" y1="6" x2="16" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/>',
+}
+
+
+def icon(name, size=20, color="#F8FAFC", stroke_width=2):
+    """Returns an inline feather-style SVG icon as an HTML string."""
+    path = _ICON_PATHS.get(name, "")
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
+        f'viewBox="0 0 24 24" fill="none" stroke="{color}" stroke-width="{stroke_width}" '
+        f'stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
+    )
+
+
 # --- STEP 1: CONFIGURE PAGE SETTINGS ---
 st.set_page_config(
     page_title="CyberGuard AI - Cyberbullying Detection System",
@@ -381,7 +408,7 @@ st.markdown("""
     .icon-badge {
         width: 42px; height: 42px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem; flex-shrink: 0;
+        flex-shrink: 0;
     }
     .icon-badge.blue   { background: linear-gradient(135deg,#2563EB,#3B82F6); box-shadow: 0 4px 16px rgba(37,99,235,0.35); }
     .icon-badge.green  { background: linear-gradient(135deg,#16A34A,#22C55E); box-shadow: 0 4px 16px rgba(34,197,94,0.35); }
@@ -418,26 +445,55 @@ st.markdown("""
     .info-card-v2 .info-v2-title { font-weight: 700; font-size: 1rem; color: var(--text) !important; }
     .info-card-v2 .info-v2-desc { font-size: 0.85rem; color: #94A3B8 !important; line-height: 1.6; }
 
-    /* Hero shield illustration */
-    .hero-shield-wrap { position: relative; display: flex; align-items: center; justify-content: center; height: 230px; }
+    /* Hero shield illustration v2 — circuit backdrop + glowing pedestal + layered shield/lock */
+    .hero-shield-wrap {
+        position: relative; display: flex; align-items: center; justify-content: center;
+        height: 280px; border-radius: 20px; overflow: hidden;
+        background-image:
+            radial-gradient(rgba(96,165,250,0.18) 1px, transparent 1px),
+            linear-gradient(rgba(96,165,250,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(96,165,250,0.08) 1px, transparent 1px);
+        background-size: 22px 22px, 44px 44px, 44px 44px;
+        background-position: center;
+    }
+    .hero-pedestal {
+        position: absolute; bottom: 14%; width: 190px; height: 26px; border-radius: 50%;
+        background: radial-gradient(ellipse at center, rgba(59,130,246,0.55), transparent 75%);
+        filter: blur(2px);
+    }
     .hero-shield-glow {
-        position: absolute; width: 200px; height: 200px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(59,130,246,0.35), transparent 70%);
-        filter: blur(6px);
+        position: absolute; width: 210px; height: 210px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(59,130,246,0.32), transparent 70%);
+        filter: blur(4px);
         animation: shield-breathe 4s ease-in-out infinite;
     }
     @keyframes shield-breathe { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
-    .hero-shield-icon { position: relative; font-size: 6.2rem; z-index: 2; filter: drop-shadow(0 0 22px rgba(59,130,246,0.55)); }
+    .hero-shield-icon {
+        position: relative; z-index: 2;
+        width: 120px; height: 120px; border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(155deg, rgba(37,99,235,0.35), rgba(124,58,237,0.25));
+        border: 1px solid rgba(147,197,253,0.4);
+        filter: drop-shadow(0 0 26px rgba(59,130,246,0.55));
+    }
     .hero-float-chip {
-        position: absolute; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 10px; padding: 6px 11px; font-size: 0.74rem; color: #E2E8F0 !important;
-        backdrop-filter: blur(6px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); z-index: 3;
+        position: absolute; display: flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 12px; padding: 7px 12px; font-size: 0.76rem; color: #E2E8F0 !important;
+        backdrop-filter: blur(6px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 3;
         animation: chip-float 3.4s ease-in-out infinite;
     }
+    .hero-float-chip .chip-badge {
+        width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .hero-float-chip .chip-badge.danger { background: #EF4444; }
+    .hero-float-chip .chip-badge.safe { background: #22C55E; }
+    .hero-float-chip .skeleton-line { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.35); }
     @keyframes chip-float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-7px); } }
-    .hero-float-chip.c1 { top: 4%; right: 2%; animation-delay: 0s; }
-    .hero-float-chip.c2 { bottom: 10%; left: 0%; animation-delay: 1.1s; }
-    .hero-float-chip.c3 { bottom: 2%; right: 10%; animation-delay: 2s; }
+    .hero-float-chip.c1 { top: 8%; right: 4%; animation-delay: 0s; }
+    .hero-float-chip.c2 { top: 42%; right: 0%; animation-delay: 1.1s; }
+    .hero-float-chip.c3 { bottom: 10%; right: 8%; animation-delay: 2s; }
 
     /* Status pill (AI Detector verdict) */
     .status-pill {
@@ -694,7 +750,7 @@ def render_sparkline(values, color):
 
 # --- STEP 4: SIDEBAR & ROUTING ---
 with st.sidebar:
-    st.markdown("<div class='sidebar-logo'>🛡 CyberGuard AI</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='sidebar-logo' style='display:flex; align-items:center; gap:8px;'>{icon('shield-check', 22, '#60A5FA')} CyberGuard AI</div>", unsafe_allow_html=True)
     st.markdown("<div class='sidebar-sub'>AI-Powered Safety Platform</div>", unsafe_allow_html=True)
     st.markdown("---")
 
@@ -755,13 +811,21 @@ if page == "🏠 Dashboard":
             st.info("Head to the **📚 Safety Guide** page from the sidebar to learn more.")
 
     with col_hero_r:
-        st.markdown("""
+        st.markdown(f"""
         <div class="hero-shield-wrap">
+            <div class="hero-pedestal"></div>
             <div class="hero-shield-glow"></div>
-            <div class="hero-shield-icon">🛡️</div>
-            <div class="hero-float-chip c1">🚫 #%@$!</div>
-            <div class="hero-float-chip c2">💬 message text</div>
-            <div class="hero-float-chip c3">✅ safe & verified</div>
+            <div class="hero-shield-icon">{icon('lock', 56, '#DBEAFE', 1.8)}</div>
+            <div class="hero-float-chip c1">
+                <span class="chip-badge danger">{icon('x-circle', 12, '#fff', 2.5)}</span> #%@$!
+            </div>
+            <div class="hero-float-chip c2">
+                {icon('message-circle', 15, '#94A3B8')}
+                <span><span class="skeleton-line" style="width:60px; display:block; margin-bottom:4px;"></span><span class="skeleton-line" style="width:38px; display:block;"></span></span>
+            </div>
+            <div class="hero-float-chip c3">
+                <span class="chip-badge safe">{icon('check-circle', 12, '#fff', 2.5)}</span> safe &amp; verified
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -781,17 +845,17 @@ if page == "🏠 Dashboard":
 
     stat_cols = st.columns(4)
     stats_v2 = [
-        ("blue", "🎯", "Accuracy", accuracy_display, "High Performance", "#3B82F6", [40, 55, 48, 62, 58, 70, 68]),
-        ("purple", "💬", "Messages Scanned", str(messages_scanned), "Total Analyzed", "#A78BFA", [20, 35, 30, 50, 45, 65, 72]),
-        ("green", "✅", "Safe Messages", str(safe_messages), "Verified Safe", "#22C55E", [30, 28, 40, 38, 52, 48, 60]),
-        ("red", "⚠️", "Cyberbullying Detected", str(bullying_detected), "Harmful Messages", "#F87171", [15, 22, 18, 30, 25, 35, 32]),
+        ("blue", "trending-up", "Accuracy", accuracy_display, "High Performance", "#3B82F6", [40, 55, 48, 62, 58, 70, 68]),
+        ("purple", "message-circle", "Messages Scanned", str(messages_scanned), "Total Analyzed", "#A78BFA", [20, 35, 30, 50, 45, 65, 72]),
+        ("green", "check-circle", "Safe Messages", str(safe_messages), "Verified Safe", "#22C55E", [30, 28, 40, 38, 52, 48, 60]),
+        ("red", "alert-triangle", "Cyberbullying Detected", str(bullying_detected), "Harmful Messages", "#F87171", [15, 22, 18, 30, 25, 35, 32]),
     ]
-    for col, (color, icon, label, number, sub, spark_color, spark_vals) in zip(stat_cols, stats_v2):
+    for col, (color, icon_name, label, number, sub, spark_color, spark_vals) in zip(stat_cols, stats_v2):
         with col:
             st.markdown(f"""
             <div class="stat-card-v2">
                 <div class="stat-v2-top">
-                    <div class="icon-badge {color}">{icon}</div>
+                    <div class="icon-badge {color}">{icon(icon_name, 20, '#fff')}</div>
                     <div class="stat-v2-label">{label}</div>
                 </div>
                 <div class="stat-v2-big">{number}</div>
@@ -805,17 +869,17 @@ if page == "🏠 Dashboard":
     # --- INFO CARDS: Objective / Technology / Applications (checklist style) ---
     feat_cols = st.columns(3)
     features_v2 = [
-        ("purple", "🎯", "Objective", ["Detect cyberbullying in real-time", "Promote a safer online environment", "Empower users with AI insights"]),
-        ("blue", "⚙️", "Technology", ["Machine Learning Models", "Natural Language Processing", "Smart Content Classification"]),
-        ("teal", "🌍", "Applications", ["Social Media Monitoring", "Online Community Safety", "Educational Awareness"]),
+        ("purple", "target", "Objective", ["Detect cyberbullying in real-time", "Promote a safer online environment", "Empower users with AI insights"]),
+        ("blue", "cpu", "Technology", ["Machine Learning Models", "Natural Language Processing", "Smart Content Classification"]),
+        ("teal", "globe", "Applications", ["Social Media Monitoring", "Online Community Safety", "Educational Awareness"]),
     ]
-    for col, (color, icon, title, items) in zip(feat_cols, features_v2):
+    for col, (color, icon_name, title, items) in zip(feat_cols, features_v2):
         with col:
             items_html = "".join(f"<li><span class='check-dot'>✓</span>{item}</li>" for item in items)
             st.markdown(f"""
             <div class="info-card-v2">
                 <div class="info-v2-head">
-                    <div class="icon-badge {color}">{icon}</div>
+                    <div class="icon-badge {color}">{icon(icon_name, 20, '#fff')}</div>
                     <div class="info-v2-title">{title}</div>
                 </div>
                 <ul class="info-v2-checklist">{items_html}</ul>
@@ -823,9 +887,9 @@ if page == "🏠 Dashboard":
             """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div class="quote-banner">
-        <span style="font-size:1.4rem;">🛡️</span>
+        <span>{icon('shield', 22, '#93C5FD')}</span>
         <span>"A safer internet begins with awareness. Let AI help build a better digital world."</span>
     </div>
     """, unsafe_allow_html=True)
