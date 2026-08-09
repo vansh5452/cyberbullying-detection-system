@@ -14,6 +14,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.api.v1 import analytics, auth, health, model, predictions, safety, simulator
 from app.core.config import settings
 from app.core.logging import logger
+from app.core.rate_limit import _prune_stale, is_allowed
 from app.db.database import init_db
 
 app = FastAPI(
@@ -74,6 +75,30 @@ async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Process-Time-Ms"] = f"{(time.time() - start) * 1000:.1f}"
     return response
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    # Health checks and interactive docs are exempt so local dev / uptime
+    # monitors never get throttled by RATE_LIMIT_PER_MINUTE.
+    exempt_paths = (f"{settings.API_V1_PREFIX}/health", "/docs", "/redoc", "/openapi.json")
+    if request.url.path.startswith(exempt_paths):
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    if not is_allowed(client_ip):
+        _prune_stale()
+        return JSONResponse(
+            status_code=429,
+            content={
+                "success": False,
+                "error": {
+                    "code": "RATE_LIMITED",
+                    "message": f"Too many requests. Limit is {settings.RATE_LIMIT_PER_MINUTE} per minute.",
+                },
+            },
+        )
+    return await call_next(request)
 
 
 # ------------------------------------------------------------------ routers
