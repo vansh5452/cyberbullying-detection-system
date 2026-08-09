@@ -361,6 +361,143 @@ st.markdown("""
 
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 8px; }
+
+    /* ========================================================
+       V2 DESIGN SYSTEM — solid navy cards, icon badges, nav pills
+       ======================================================== */
+
+    /* Solid panel used by the redesigned Dashboard / AI Detector */
+    .panel {
+        background: #121A2E;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px;
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.1rem;
+    }
+    .panel-title { font-size: 1rem; font-weight: 700; color: var(--text) !important; margin-bottom: 0.2rem; }
+    .panel-sub { font-size: 0.82rem; color: #64748B !important; margin-bottom: 1rem; }
+
+    /* Icon badges (rounded gradient squares) */
+    .icon-badge {
+        width: 42px; height: 42px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; flex-shrink: 0;
+    }
+    .icon-badge.blue   { background: linear-gradient(135deg,#2563EB,#3B82F6); box-shadow: 0 4px 16px rgba(37,99,235,0.35); }
+    .icon-badge.green  { background: linear-gradient(135deg,#16A34A,#22C55E); box-shadow: 0 4px 16px rgba(34,197,94,0.35); }
+    .icon-badge.teal   { background: linear-gradient(135deg,#0D9488,#14B8A6); box-shadow: 0 4px 16px rgba(20,184,166,0.35); }
+    .icon-badge.red    { background: linear-gradient(135deg,#DC2626,#EF4444); box-shadow: 0 4px 16px rgba(239,68,68,0.35); }
+    .icon-badge.purple { background: linear-gradient(135deg,#7C3AED,#8B5CF6); box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
+
+    /* Stat cards v2 */
+    .stat-card-v2 {
+        background: #121A2E;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px;
+        padding: 1.25rem 1.3rem;
+        height: 100%;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .stat-card-v2:hover { transform: translateY(-3px); border-color: rgba(124,92,237,0.35); }
+    .stat-card-v2 .stat-v2-top { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.9rem; }
+    .stat-card-v2 .stat-v2-label { font-size: 0.85rem; font-weight: 600; color: #94A3B8 !important; }
+    .stat-card-v2 .stat-v2-big { font-size: 1.85rem; font-weight: 800; color: var(--text) !important; line-height: 1; margin-bottom: 0.3rem; }
+    .stat-card-v2 .stat-v2-sub { font-size: 0.78rem; color: #64748B !important; }
+
+    /* Info cards v2 (Objective / Technology / Applications) */
+    .info-card-v2 {
+        background: #121A2E;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px;
+        padding: 1.35rem 1.4rem;
+        height: 100%;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .info-card-v2:hover { transform: translateY(-3px); border-color: rgba(37,99,235,0.35); }
+    .info-card-v2 .info-v2-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.8rem; }
+    .info-card-v2 .info-v2-title { font-weight: 700; font-size: 1rem; color: var(--text) !important; }
+    .info-card-v2 .info-v2-desc { font-size: 0.85rem; color: #94A3B8 !important; line-height: 1.6; }
+
+    /* Hero shield illustration */
+    .hero-shield-wrap { position: relative; display: flex; align-items: center; justify-content: center; height: 230px; }
+    .hero-shield-glow {
+        position: absolute; width: 200px; height: 200px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(59,130,246,0.35), transparent 70%);
+        filter: blur(6px);
+        animation: shield-breathe 4s ease-in-out infinite;
+    }
+    @keyframes shield-breathe { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+    .hero-shield-icon { position: relative; font-size: 6.2rem; z-index: 2; filter: drop-shadow(0 0 22px rgba(59,130,246,0.55)); }
+    .hero-float-chip {
+        position: absolute; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px; padding: 6px 11px; font-size: 0.74rem; color: #E2E8F0 !important;
+        backdrop-filter: blur(6px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); z-index: 3;
+        animation: chip-float 3.4s ease-in-out infinite;
+    }
+    @keyframes chip-float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-7px); } }
+    .hero-float-chip.c1 { top: 4%; right: 2%; animation-delay: 0s; }
+    .hero-float-chip.c2 { bottom: 10%; left: 0%; animation-delay: 1.1s; }
+    .hero-float-chip.c3 { bottom: 2%; right: 10%; animation-delay: 2s; }
+
+    /* Status pill (AI Detector verdict) */
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 15px; border-radius: 999px; font-weight: 700; font-size: 0.85rem;
+    }
+    .status-pill.safe   { background: rgba(34,197,94,0.15); color: #4ADE80 !important; border: 1px solid rgba(34,197,94,0.4); }
+    .status-pill.danger { background: rgba(239,68,68,0.15); color: #F87171 !important; border: 1px solid rgba(239,68,68,0.4); }
+    .severity-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+    /* Char counter under textarea */
+    .char-counter { font-size: 0.76rem; color: #64748B !important; text-align: right; margin-top: -0.4rem; margin-bottom: 0.6rem; }
+
+    /* ---------- MIC ORB + RECORDING ANIMATION ---------- */
+    .mic-orb-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0.8rem 0 0.4rem 0; }
+    .mic-orb { position: relative; width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; }
+    .mic-orb-ring {
+        position: absolute; width: 76px; height: 76px; border-radius: 50%;
+        border: 2px solid rgba(37,99,235,0.55);
+        animation: mic-pulse 2.2s ease-out infinite;
+    }
+    .mic-orb-ring.r2 { animation-delay: 0.7s; border-color: rgba(124,58,237,0.5); }
+    @keyframes mic-pulse { 0% { transform: scale(0.85); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
+    .mic-orb-core {
+        position: relative; z-index: 2; width: 56px; height: 56px; border-radius: 50%;
+        background: linear-gradient(135deg, #2563EB, #7C3AED);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; box-shadow: 0 6px 22px rgba(37,99,235,0.45);
+    }
+    .voice-hint { font-size: 0.78rem; color: #64748B !important; text-align: center; margin: 0; }
+
+    .waveform { display: flex; align-items: center; justify-content: center; gap: 4px; height: 34px; margin: 0.5rem 0; }
+    .waveform span {
+        width: 4px; border-radius: 3px;
+        background: linear-gradient(180deg, #2563EB, #7C3AED);
+        animation: wave-bounce 0.9s ease-in-out infinite;
+        display: inline-block;
+    }
+    .waveform span:nth-child(1) { height: 10px; animation-delay: 0s; }
+    .waveform span:nth-child(2) { height: 22px; animation-delay: 0.1s; }
+    .waveform span:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+    .waveform span:nth-child(4) { height: 18px; animation-delay: 0.3s; }
+    .waveform span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+    @keyframes wave-bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+
+    /* ---------- SIDEBAR NAV PILLS ---------- */
+    [data-testid="stSidebar"] .stRadio > div { gap: 2px; }
+    [data-testid="stSidebar"] .stRadio label {
+        padding: 9px 12px !important;
+        border-radius: 12px !important;
+        transition: background 0.15s ease;
+        width: 100%;
+    }
+    [data-testid="stSidebar"] .stRadio label:hover { background: rgba(255,255,255,0.05); }
+    [data-testid="stSidebar"] .stRadio label:has(input:checked) {
+        background: linear-gradient(135deg, #2563EB, #7C3AED) !important;
+    }
+    [data-testid="stSidebar"] .stRadio label:has(input:checked) p {
+        color: #FFFFFF !important; font-weight: 700 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -468,6 +605,33 @@ def render_probability_bar(confidence, is_bullying):
     return fig
 
 
+def render_confidence_ring(confidence_pct, is_bullying):
+    """Compact donut-style ring gauge (used in the redesigned AI Detector result panel)."""
+    color = "#EF4444" if is_bullying else "#22C55E"
+    remainder = max(0, 100 - confidence_pct)
+    fig = go.Figure(go.Pie(
+        values=[confidence_pct, remainder],
+        hole=0.78,
+        marker=dict(colors=[color, "rgba(255,255,255,0.08)"]),
+        textinfo="none",
+        sort=False,
+        direction="clockwise",
+        rotation=0,
+    ))
+    fig.update_traces(hoverinfo="skip")
+    fig.add_annotation(
+        text=f"<b>{confidence_pct:.0f}%</b>", x=0.5, y=0.5, showarrow=False,
+        font=dict(size=20, color="#F8FAFC", family="Inter")
+    )
+    fig.update_layout(
+        height=140, width=140,
+        margin=dict(l=0, r=0, t=0, b=0),
+        paper_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+    )
+    return fig
+
+
 # --- STEP 4: SIDEBAR & ROUTING ---
 with st.sidebar:
     st.markdown("<div class='sidebar-logo'>🛡 CyberGuard AI</div>", unsafe_allow_html=True)
@@ -505,10 +669,10 @@ if page == "🏠 Dashboard":
     with col_hero_l:
         st.markdown("""
         <div class="hero-wrap">
-            <span class="hero-eyebrow">🛡 AI-Powered Detection Engine</span>
+            <span class="hero-eyebrow">🛡 AI Powered • Safe Internet for All</span>
             <div class="hero-title">CyberGuard AI</div>
             <div class="hero-subtitle">AI Powered Cyberbullying Detection</div>
-            <div class="hero-desc">Detect harmful online messages using Machine Learning and Natural Language Processing — in real time, with explainable results and built-in safety guidance.</div>
+            <div class="hero-desc">Detect harmful, abusive, or toxic content in online messages using Machine Learning and Natural Language Processing.</div>
         </div>
         """, unsafe_allow_html=True)
         btn_col1, btn_col2, _ = st.columns([2, 2, 3])
@@ -522,9 +686,17 @@ if page == "🏠 Dashboard":
             st.info("Head to the **📚 Safety Guide** page from the sidebar to learn more.")
 
     with col_hero_r:
-        st.markdown("<div class='hero-illustration'>🛡️✨</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="hero-shield-wrap">
+            <div class="hero-shield-glow"></div>
+            <div class="hero-shield-icon">🛡️</div>
+            <div class="hero-float-chip c1">🚫 #%@$!</div>
+            <div class="hero-float-chip c2">💬 message text</div>
+            <div class="hero-float-chip c3">✅ safe & verified</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # --- STAT CARDS (now backed by the database via the backend, not session state) ---
+    # --- STAT CARDS (backed by the database via the backend, not session state) ---
     try:
         dashboard_stats = api_client.get_dashboard_stats()
         accuracy_display = (
@@ -539,38 +711,43 @@ if page == "🏠 Dashboard":
         accuracy_display, messages_scanned, safe_messages, bullying_detected = "—", 0, 0, 0
 
     stat_cols = st.columns(4)
-    stats = [
-        ("🎯", accuracy_display, "Model Accuracy"),
-        ("📨", str(messages_scanned), "Messages Scanned"),
-        ("✅", str(safe_messages), "Safe Messages"),
-        ("🚨", str(bullying_detected), "Cyberbullying Detected"),
+    stats_v2 = [
+        ("blue", "🎯", "Accuracy", accuracy_display, "Model Accuracy"),
+        ("purple", "💬", "Messages Scanned", str(messages_scanned), "Total Messages"),
+        ("green", "✅", "Safe Messages", str(safe_messages), "Verified Safe"),
+        ("red", "⚠️", "Cyberbullying Detected", str(bullying_detected), "Harmful Messages"),
     ]
-    for col, (icon, number, label) in zip(stat_cols, stats):
+    for col, (color, icon, label, number, sub) in zip(stat_cols, stats_v2):
         with col:
             st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-icon">{icon}</div>
-                <div class="stat-number">{number}</div>
-                <div class="stat-label">{label}</div>
+            <div class="stat-card-v2">
+                <div class="stat-v2-top">
+                    <div class="icon-badge {color}">{icon}</div>
+                    <div class="stat-v2-label">{label}</div>
+                </div>
+                <div class="stat-v2-big">{number}</div>
+                <div class="stat-v2-sub">{sub}</div>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- FEATURE CARDS ---
+    # --- INFO CARDS: Objective / Technology / Applications ---
     feat_cols = st.columns(3)
-    features = [
-        ("🎯", "Objective", "Automatically detect and flag cyberbullying in text using an NLP pipeline, protecting students and users from online harassment in real time."),
-        ("⚙️", "Technology", "Built with TF-IDF vectorization and a Logistic Regression classifier, trained on a labeled dataset of safe and toxic messages."),
-        ("🌍", "Applications", "Applicable to social media moderation, classroom chat platforms, online forums, and any space where user-generated text needs protection."),
+    features_v2 = [
+        ("purple", "🎯", "Objective", "Identify and flag harmful, abusive, or toxic content in online conversations to keep students and users safe."),
+        ("blue", "⚙️", "Technology", "Powered by TF-IDF vectorization and a Logistic Regression classifier — trained Machine Learning and Natural Language Processing models."),
+        ("teal", "🌍", "Applications", "Social media moderation, classroom chat platforms, online forums, and any space where user-generated text needs protection."),
     ]
-    for col, (icon, title, desc) in zip(feat_cols, features):
+    for col, (color, icon, title, desc) in zip(feat_cols, features_v2):
         with col:
             st.markdown(f"""
-            <div class="feature-card">
-                <div class="feature-icon">{icon}</div>
-                <div class="feature-title">{title}</div>
-                <div class="feature-desc">{desc}</div>
+            <div class="info-card-v2">
+                <div class="info-v2-head">
+                    <div class="icon-badge {color}">{icon}</div>
+                    <div class="info-v2-title">{title}</div>
+                </div>
+                <div class="info-v2-desc">{desc}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -579,9 +756,9 @@ if page == "🏠 Dashboard":
     col1, col2 = st.columns([7, 5])
     with col1:
         st.markdown("""
-        <div class="glass-card">
-            <div class="card-title">📊 Cyberbullying Incidence by Platform</div>
-            <p style="font-size: 0.9rem;">Key findings from child safety research indicating why this AI system is critical today.</p>
+        <div class="panel">
+            <div class="panel-title">📊 Cyberbullying Incidence by Platform</div>
+            <div class="panel-sub">Key findings from child safety research indicating why this AI system is critical today.</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -606,10 +783,10 @@ if page == "🏠 Dashboard":
 
     with col2:
         st.markdown("""
-        <div class="glass-card">
-            <div class="card-title">⚙️ How It Works</div>
-            <ol style="font-size: 0.9rem; padding-left: 1.1rem;">
-                <li><b>Data Acquisition:</b> A labeled dataset (<code>dataset.csv</code>) teaches the model safe vs. toxic phrases.</li>
+        <div class="panel">
+            <div class="panel-title">⚙️ How It Works</div>
+            <ol style="font-size: 0.88rem; padding-left: 1.1rem; color: #CBD5E1;">
+                <li><b>Data Acquisition:</b> A labeled dataset teaches the model safe vs. toxic phrases.</li>
                 <li><b>Text Cleaning:</b> Input text is standardized — lowercased and stripped of special characters.</li>
                 <li><b>TF-IDF Processing:</b> Extracts numerical weight matrices representing vocabulary significance.</li>
                 <li><b>Classifier Training:</b> Learns coefficients and saves a binary model file via Pickle.</li>
@@ -628,7 +805,7 @@ if page == "🏠 Dashboard":
 # ==========================================
 elif page == "🔍 AI Detector":
     st.markdown("## 🔍 AI Detector")
-    st.markdown("<p>Analyze any message in real time and get an explainable safety verdict.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94A3B8;'>Analyze text for cyberbullying and harmful content.</p>", unsafe_allow_html=True)
 
     if not st.session_state.model_trained:
         st.markdown("<div class='banner-danger'>⚠️ The AI model has not been trained yet. Operating in <b>Lexicon Fallback Mode</b>. Train the real ML model on the <b>📊 Analytics</b> page.</div>", unsafe_allow_html=True)
@@ -636,21 +813,24 @@ elif page == "🔍 AI Detector":
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns([7, 5])
 
+    MAX_CHARS = 500
+
     with col1:
-        st.markdown("<div class='glass-card'><div class='card-title'>💬 Analyze a Message</div>", unsafe_allow_html=True)
+        st.markdown("<div class='panel'>", unsafe_allow_html=True)
 
         text_input = st.text_area(
             "Message",
             key=f"detector_textarea_{st.session_state.detector_input_key}",
-            placeholder="Type or paste a message to scan for cyberbullying...",
-            height=130,
+            placeholder="Type or paste your message here...",
+            height=150,
+            max_chars=MAX_CHARS,
             label_visibility="collapsed"
         )
-        st.markdown(f"<p style='font-size:0.78rem; text-align:right; color:#64748B;'>{len(text_input)} characters</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='char-counter'>{len(text_input)} / {MAX_CHARS}</p>", unsafe_allow_html=True)
 
         act_col1, act_col2 = st.columns([1, 1])
         with act_col1:
-            analyze_clicked = st.button("🔎 Analyze", use_container_width=True)
+            analyze_clicked = st.button("🔎 Analyze", use_container_width=True, type="primary")
         with act_col2:
             clear_clicked = st.button("🗑️ Clear", use_container_width=True)
 
@@ -658,8 +838,16 @@ elif page == "🔍 AI Detector":
             st.session_state.detector_input_key += 1
             st.rerun()
 
+        analysis_status = st.empty()
+
         if analyze_clicked and text_input.strip():
-            with st.spinner("Scanning message with CyberGuard AI..."):
+            with analysis_status.container():
+                st.markdown("""
+                <div style='display:flex; align-items:center; gap:0.7rem; padding:0.6rem 0;'>
+                    <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
+                    <span style='font-size:0.85rem; color:#94A3B8;'>Analyzing your message — CyberGuard AI is processing the text...</span>
+                </div>
+                """, unsafe_allow_html=True)
                 start_t = time.time()
                 try:
                     result = api_client.predict_message(text_input)
@@ -667,6 +855,7 @@ elif page == "🔍 AI Detector":
                 except ApiError as e:
                     result, api_error = None, e
                 elapsed_ms = (time.time() - start_t) * 1000
+            analysis_status.empty()
 
             if api_error:
                 st.error(f"❌ Backend error: {api_error.message}")
@@ -691,13 +880,25 @@ elif page == "🔍 AI Detector":
                 else:
                     bot_reply = "🟢 This message looks safe and friendly. Thanks for helping keep online spaces positive!"
                 st.session_state.detector_chatbot_messages.append({"role": "assistant", "content": bot_reply})
+                st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- Voice recorder card (feature preserved) ---
-        st.markdown("<div class='glass-card'><div class='card-title'>🎙️ Voice Input Scanner</div>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size:0.85rem;'>Click record, speak into your mic, and click stop to scan voice messages.</p>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size: 0.78rem; color: #FBBF24;'>⚠️ Browsers require a secure context (<code>localhost</code> or <code>https://</code>) to access the microphone.</p>", unsafe_allow_html=True)
+        # --- Voice recorder card, with orb + waveform animation ---
+        st.markdown("<div class='panel'>", unsafe_allow_html=True)
+        st.markdown("<div class='panel-title'>🎙️ Voice Input Scanner</div>", unsafe_allow_html=True)
+        st.markdown("<div class='panel-sub'>Tap the recorder, speak your message, then tap stop to scan it.</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="mic-orb-wrap">
+            <div class="mic-orb">
+                <div class="mic-orb-ring r1"></div>
+                <div class="mic-orb-ring r2"></div>
+                <div class="mic-orb-core">🎙️</div>
+            </div>
+            <p class="voice-hint">Ready to listen — use the recorder below</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 0.74rem; color: #FBBF24; text-align:center;'>⚠️ Browsers require a secure context (<code>localhost</code> or <code>https://</code>) to access the microphone.</p>", unsafe_allow_html=True)
 
         from audiorecorder import audiorecorder
         import speech_recognition as sr
@@ -725,42 +926,49 @@ elif page == "🔍 AI Detector":
                     with sr.AudioFile(wav_io) as source:
                         audio_data = recognizer.record(source)
 
-                    with st.spinner("Decoding voice message..."):
-                        voice_text = recognizer.recognize_google(audio_data)
+                    waveform_slot = st.empty()
+                    waveform_slot.markdown("""
+                    <div style='text-align:center;'>
+                        <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
+                        <p class="voice-hint">Decoding voice message...</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    voice_text = recognizer.recognize_google(audio_data)
+                    waveform_slot.empty()
 
-                        st.session_state.detector_chatbot_messages.append({"role": "user", "content": f"🎤 Voice Message: \"{voice_text}\""})
+                    st.session_state.detector_chatbot_messages.append({"role": "user", "content": f"🎤 Voice Message: \"{voice_text}\""})
 
-                        voice_result, voice_api_error = None, None
-                        try:
-                            voice_result = api_client.predict_message(voice_text)
-                        except ApiError as e:
-                            voice_api_error = e
+                    voice_result, voice_api_error = None, None
+                    try:
+                        voice_result = api_client.predict_message(voice_text)
+                    except ApiError as e:
+                        voice_api_error = e
 
-                        if voice_api_error:
-                            st.session_state.recorder_key += 1
-                            st.error(f"❌ Backend error: {voice_api_error.message}")
+                    if voice_api_error:
+                        st.session_state.recorder_key += 1
+                        st.error(f"❌ Backend error: {voice_api_error.message}")
+                    else:
+                        log_scan_stats(voice_result['label'])
+
+                        if voice_result['label'] == 1:
+                            bot_reply = "🚨 This voice message was flagged as potential cyberbullying. Stay calm, don't reply, and talk to a trusted adult."
                         else:
-                            log_scan_stats(voice_result['label'])
+                            bot_reply = "🟢 This voice message looks safe and friendly!"
 
-                            if voice_result['label'] == 1:
-                                bot_reply = "🚨 This voice message was flagged as potential cyberbullying. Stay calm, don't reply, and talk to a trusted adult."
-                            else:
-                                bot_reply = "🟢 This voice message looks safe and friendly!"
+                        st.session_state.detector_chatbot_messages.append({"role": "assistant", "content": bot_reply})
 
-                            st.session_state.detector_chatbot_messages.append({"role": "assistant", "content": bot_reply})
-
-                            st.session_state.last_scanned_result = {
-                                "text": f"🎤 Voice: \"{voice_text}\"",
-                                "label": voice_result['label'],
-                                "confidence": voice_result['confidence'],
-                                "method": f"{voice_result['method']} (Speech-to-Text)",
-                                "matched_words": voice_result['matched_words'],
-                                "category": voice_result['category'],
-                                "severity": voice_result['severity'],
-                                "elapsed_ms": None
-                            }
-                            st.session_state.recorder_key += 1
-                            st.rerun()
+                        st.session_state.last_scanned_result = {
+                            "text": f"🎤 Voice: \"{voice_text}\"",
+                            "label": voice_result['label'],
+                            "confidence": voice_result['confidence'],
+                            "method": f"{voice_result['method']} (Speech-to-Text)",
+                            "matched_words": voice_result['matched_words'],
+                            "category": voice_result['category'],
+                            "severity": voice_result['severity'],
+                            "elapsed_ms": None
+                        }
+                        st.session_state.recorder_key += 1
+                        st.rerun()
                 except sr.UnknownValueError:
                     st.session_state.recorder_key += 1
                     st.warning("🎙️ Could not understand the voice audio. Please speak clearly and try again.")
@@ -781,41 +989,48 @@ elif page == "🔍 AI Detector":
                         st.markdown(m["content"], unsafe_allow_html=True)
 
     with col2:
-        st.markdown("<div class='glass-card'><div class='card-title'>📈 Analysis Result</div>", unsafe_allow_html=True)
+        st.markdown("<div class='panel'>", unsafe_allow_html=True)
 
         if st.session_state.last_scanned_result is None:
-            st.info("💡 Analyze a message to see real-time results here.")
+            st.markdown("<div class='panel-title'>Analysis Result</div>", unsafe_allow_html=True)
+            st.info("💡 Analyze a message to see the real-time verdict here.")
         else:
             res = st.session_state.last_scanned_result
             is_bullying = res['label'] == 1
             confidence_pct = res['confidence'] * 100
 
-            st.write("**Scanned Text:**")
-            st.code(res['text'], language="text")
+            status_col, ring_col = st.columns([7, 5])
+            with status_col:
+                if is_bullying:
+                    st.markdown("<span class='status-pill danger'>🚨 CYBERBULLYING</span>", unsafe_allow_html=True)
+                    st.markdown("<p style='font-size:0.82rem; color:#94A3B8; margin-top:0.5rem;'>This message was flagged as harmful</p>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<span class='status-pill safe'>✅ SAFE</span>", unsafe_allow_html=True)
+                    st.markdown("<p style='font-size:0.82rem; color:#94A3B8; margin-top:0.5rem;'>This message is safe</p>", unsafe_allow_html=True)
 
-            if is_bullying:
-                st.markdown("<span class='badge badge-danger'>🚨 Cyberbullying Detected</span>", unsafe_allow_html=True)
-            else:
-                st.markdown("<span class='badge badge-safe'>🟢 Safe Message</span>", unsafe_allow_html=True)
+                sev_color = {"High": "#EF4444", "Medium-High": "#F97316", "Medium": "#F59E0B", "None": "#22C55E"}.get(res['severity'], "#94A3B8")
+                st.markdown(f"""
+                <p style='font-size:0.8rem; color:#94A3B8; margin-top:0.9rem; margin-bottom:0.2rem;'>Severity</p>
+                <p style='font-size:0.88rem; color:#F8FAFC;'><span class='severity-dot' style='background:{sev_color};'></span>{res['severity']}</p>
+                """, unsafe_allow_html=True)
 
-            st.plotly_chart(render_gauge(confidence_pct, is_bullying), use_container_width=True, config={'displayModeBar': False})
+            with ring_col:
+                st.plotly_chart(render_confidence_ring(confidence_pct, is_bullying), use_container_width=False, config={'displayModeBar': False})
 
-            chip_col1, chip_col2 = st.columns(2)
-            with chip_col1:
-                st.markdown(f"<span class='chip'>Category: {res['category']}</span>", unsafe_allow_html=True)
-            with chip_col2:
-                st.markdown(f"<span class='chip'>Severity: {res['severity']}</span>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size:0.8rem; color:#94A3B8; margin-top:0.6rem; margin-bottom:0.4rem;'>Category</p>", unsafe_allow_html=True)
+            st.markdown(f"<span class='chip'>{res['category']}</span>", unsafe_allow_html=True)
+
+            st.markdown("<p style='font-size:0.8rem; color:#94A3B8; margin-top:1rem; margin-bottom:0.2rem;'>Probability Distribution</p>", unsafe_allow_html=True)
+            st.plotly_chart(render_probability_bar(res['confidence'], is_bullying), use_container_width=True, config={'displayModeBar': False})
 
             meta_col1, meta_col2 = st.columns(2)
             with meta_col1:
                 st.metric("Method", res['method'])
             with meta_col2:
                 if res.get('elapsed_ms') is not None:
-                    st.metric("Processing Time", f"{res['elapsed_ms']:.1f} ms")
+                    st.metric("Processing Time", f"{res['elapsed_ms']:.0f} ms")
                 else:
                     st.metric("Processing Time", "—")
-
-            st.plotly_chart(render_probability_bar(res['confidence'], is_bullying), use_container_width=True, config={'displayModeBar': False})
 
             if res['matched_words']:
                 try:
