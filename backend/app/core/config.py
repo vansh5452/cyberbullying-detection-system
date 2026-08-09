@@ -50,7 +50,8 @@ class Settings:
 
     # --- Rate limiting ---
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
-
+# --- One-time admin setup (see /auth/promote-admin) ---
+    ADMIN_SETUP_KEY: str = os.getenv("ADMIN_SETUP_KEY", "")
     # --- Server ---
     PORT: int = int(os.getenv("PORT", "8000"))
 
