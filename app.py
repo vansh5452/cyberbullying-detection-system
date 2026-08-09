@@ -483,6 +483,48 @@ st.markdown("""
     .waveform span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
     @keyframes wave-bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
 
+    /* Checklist items inside info cards */
+    .info-v2-checklist { list-style: none; padding: 0; margin: 0; }
+    .info-v2-checklist li {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.85rem; color: #CBD5E1 !important;
+        padding: 5px 0;
+    }
+    .check-dot {
+        width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+        background: rgba(34,197,94,0.18); color: #4ADE80;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 900;
+    }
+
+    /* Quote banner */
+    .quote-banner {
+        background: linear-gradient(90deg, rgba(37,99,235,0.12), rgba(124,58,237,0.12));
+        border: 1px solid rgba(124,58,237,0.3);
+        border-radius: 16px;
+        padding: 1.1rem 1.6rem;
+        display: flex; align-items: center; gap: 1rem;
+        font-size: 0.95rem; color: #E2E8F0 !important; font-style: italic;
+        margin-top: 0.5rem;
+    }
+
+    /* Sparkline mini-chart container inside stat cards */
+    .stat-card-v2 .sparkline-holder { margin-top: -0.3rem; }
+    .stat-card-v2 .sparkline-holder .js-plotly-plot { margin-bottom: -10px; }
+
+    /* Sidebar status box */
+    .sidebar-status-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        margin-top: 0.8rem;
+    }
+    .sidebar-status-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #94A3B8 !important; margin-bottom: 6px; }
+    .sidebar-status-row:last-child { margin-bottom: 0; }
+    .status-dot-green { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 8px rgba(34,197,94,0.7); flex-shrink:0; }
+    .sidebar-status-label { color: #F8FAFC !important; font-weight: 600; }
+
     /* ---------- SIDEBAR NAV PILLS ---------- */
     [data-testid="stSidebar"] .stRadio > div { gap: 2px; }
     [data-testid="stSidebar"] .stRadio label {
@@ -632,6 +674,24 @@ def render_confidence_ring(confidence_pct, is_bullying):
     return fig
 
 
+def render_sparkline(values, color):
+    """Minimal axis-free line chart used inside dashboard stat cards."""
+    fig = go.Figure(go.Scatter(
+        y=values, mode="lines", line=dict(color=color, width=2.5), fill="tozeroy",
+        fillcolor=color.replace(")", ",0.12)").replace("rgb", "rgba") if color.startswith("rgb") else "rgba(0,0,0,0)"
+    ))
+    fig.update_layout(
+        height=46,
+        margin=dict(l=0, r=0, t=0, b=0),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        showlegend=False,
+    )
+    return fig
+
+
 # --- STEP 4: SIDEBAR & ROUTING ---
 with st.sidebar:
     st.markdown("<div class='sidebar-logo'>🛡 CyberGuard AI</div>", unsafe_allow_html=True)
@@ -653,11 +713,20 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("<p style='font-size:0.78rem; color:#64748B;'>Model Status</p>", unsafe_allow_html=True)
-    if st.session_state.model_trained:
-        st.markdown("<span class='badge badge-safe'>● Model Active</span>", unsafe_allow_html=True)
-    else:
-        st.markdown("<span class='badge badge-danger'>● Lexicon Fallback</span>", unsafe_allow_html=True)
+    model_status_label = "Active" if st.session_state.model_trained else "Fallback Mode"
+    model_status_color = "#22C55E" if st.session_state.model_trained else "#FBBF24"
+    st.markdown(f"""
+    <div class="sidebar-status-box">
+        <div class="sidebar-status-row">
+            <span class="status-dot-green"></span> System Status
+        </div>
+        <div class="sidebar-status-label" style="margin-bottom:10px; margin-left:15px;">Online</div>
+        <div class="sidebar-status-row">
+            <span class="status-dot-green" style="background:{model_status_color}; box-shadow:0 0 8px {model_status_color};"></span> AI Model
+        </div>
+        <div class="sidebar-status-label" style="margin-left:15px; color:{model_status_color} !important;">{model_status_label}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- STEP 5: RENDER PAGE CONTENTS ---
 
@@ -712,12 +781,12 @@ if page == "🏠 Dashboard":
 
     stat_cols = st.columns(4)
     stats_v2 = [
-        ("blue", "🎯", "Accuracy", accuracy_display, "Model Accuracy"),
-        ("purple", "💬", "Messages Scanned", str(messages_scanned), "Total Messages"),
-        ("green", "✅", "Safe Messages", str(safe_messages), "Verified Safe"),
-        ("red", "⚠️", "Cyberbullying Detected", str(bullying_detected), "Harmful Messages"),
+        ("blue", "🎯", "Accuracy", accuracy_display, "High Performance", "#3B82F6", [40, 55, 48, 62, 58, 70, 68]),
+        ("purple", "💬", "Messages Scanned", str(messages_scanned), "Total Analyzed", "#A78BFA", [20, 35, 30, 50, 45, 65, 72]),
+        ("green", "✅", "Safe Messages", str(safe_messages), "Verified Safe", "#22C55E", [30, 28, 40, 38, 52, 48, 60]),
+        ("red", "⚠️", "Cyberbullying Detected", str(bullying_detected), "Harmful Messages", "#F87171", [15, 22, 18, 30, 25, 35, 32]),
     ]
-    for col, (color, icon, label, number, sub) in zip(stat_cols, stats_v2):
+    for col, (color, icon, label, number, sub, spark_color, spark_vals) in zip(stat_cols, stats_v2):
         with col:
             st.markdown(f"""
             <div class="stat-card-v2">
@@ -729,27 +798,37 @@ if page == "🏠 Dashboard":
                 <div class="stat-v2-sub">{sub}</div>
             </div>
             """, unsafe_allow_html=True)
+            st.plotly_chart(render_sparkline(spark_vals, spark_color), use_container_width=True, config={'displayModeBar': False}, key=f"spark_{label}")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- INFO CARDS: Objective / Technology / Applications ---
+    # --- INFO CARDS: Objective / Technology / Applications (checklist style) ---
     feat_cols = st.columns(3)
     features_v2 = [
-        ("purple", "🎯", "Objective", "Identify and flag harmful, abusive, or toxic content in online conversations to keep students and users safe."),
-        ("blue", "⚙️", "Technology", "Powered by TF-IDF vectorization and a Logistic Regression classifier — trained Machine Learning and Natural Language Processing models."),
-        ("teal", "🌍", "Applications", "Social media moderation, classroom chat platforms, online forums, and any space where user-generated text needs protection."),
+        ("purple", "🎯", "Objective", ["Detect cyberbullying in real-time", "Promote a safer online environment", "Empower users with AI insights"]),
+        ("blue", "⚙️", "Technology", ["Machine Learning Models", "Natural Language Processing", "Smart Content Classification"]),
+        ("teal", "🌍", "Applications", ["Social Media Monitoring", "Online Community Safety", "Educational Awareness"]),
     ]
-    for col, (color, icon, title, desc) in zip(feat_cols, features_v2):
+    for col, (color, icon, title, items) in zip(feat_cols, features_v2):
         with col:
+            items_html = "".join(f"<li><span class='check-dot'>✓</span>{item}</li>" for item in items)
             st.markdown(f"""
             <div class="info-card-v2">
                 <div class="info-v2-head">
                     <div class="icon-badge {color}">{icon}</div>
                     <div class="info-v2-title">{title}</div>
                 </div>
-                <div class="info-v2-desc">{desc}</div>
+                <ul class="info-v2-checklist">{items_html}</ul>
             </div>
             """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="quote-banner">
+        <span style="font-size:1.4rem;">🛡️</span>
+        <span>"A safer internet begins with awareness. Let AI help build a better digital world."</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
