@@ -7,7 +7,7 @@ from app.core.security import create_access_token, hash_password, verify_passwor
 from app.core.config import settings
 from app.db.database import get_db
 from app.db.models import User, UserRole
-from app.schemas.auth import TokenResponse, UserLogin, UserOut, UserRegister
+from app.schemas.auth import AdminPromoteRequest, TokenResponse, UserLogin, UserOut, UserRegister
 from app.utils.helpers import api_error
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -61,4 +61,19 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserOut, summary="Get the current authenticated user")
 def me(user: User = Depends(get_current_user)):
+    return UserOut.model_validate(user)
+@router.post("/promote-admin", response_model=UserOut, summary="One-time admin promotion")
+def promote_admin(payload: AdminPromoteRequest, db: Session = Depends(get_db)):
+    if not settings.ADMIN_SETUP_KEY:
+        raise api_error(403, "DISABLED", "Admin setup is disabled. Set ADMIN_SETUP_KEY to enable it.")
+    if payload.setup_key != settings.ADMIN_SETUP_KEY:
+        raise api_error(401, "INVALID_SETUP_KEY", "Setup key does not match.")
+
+    user = db.query(User).filter(User.username == payload.username).first()
+    if not user:
+        raise api_error(404, "NOT_FOUND", "No user with that username.")
+
+    user.role = UserRole.admin
+    db.commit()
+    db.refresh(user)
     return UserOut.model_validate(user)
