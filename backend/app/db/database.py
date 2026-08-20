@@ -31,3 +31,27 @@ def init_db():
     """Create all tables. Called once on startup (dev-friendly; use Alembic for real migrations)."""
     from app.db import models  # noqa: F401  (ensures models are registered on Base)
     Base.metadata.create_all(bind=engine)
+
+    # Auto-seed default admin user if none exists
+    from app.db.models import User, UserRole
+    from app.core.security import hash_password
+    from app.core.logging import logger
+
+    db = SessionLocal()
+    try:
+        admin_exists = db.query(User).filter(User.role == UserRole.admin).first()
+        if not admin_exists:
+            admin_user = User(
+                username="admin",
+                email="admin@cyberguard.ai",
+                password_hash=hash_password("AdminPassword123"),
+                role=UserRole.admin,
+            )
+            db.add(admin_user)
+            db.commit()
+            logger.info("Database initialized and default admin user seeded successfully (username: admin, password: AdminPassword123).")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error seeding default admin user: {e}")
+    finally:
+        db.close()

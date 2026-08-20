@@ -27,6 +27,23 @@ import plotly.express as px
 import api_client
 from api_client import ApiError
 
+# --- STREAMLIT CACHING FOR STATIC API CALLS ---
+@st.cache_data(show_spinner=False)
+def cached_get_cyber_laws():
+    return api_client.get_cyber_laws()
+
+@st.cache_data(show_spinner=False)
+def cached_get_helplines():
+    return api_client.get_helplines()
+
+@st.cache_data(show_spinner=False)
+def cached_get_safety_tips():
+    return api_client.get_safety_tips()
+
+@st.cache_data(show_spinner=False)
+def cached_get_simulated_posts():
+    return api_client.get_simulated_posts()
+
 # --- SVG ICON LIBRARY (crisp line icons, replaces emoji for a more polished look) ---
 _ICON_PATHS = {
     "trending-up": '<polyline points="3,17 9,11 13,15 21,6"/><polyline points="14,6 21,6 21,13"/>',
@@ -1211,7 +1228,7 @@ elif page == "💬 Chat Simulator":
         st.markdown("<p style='font-size:0.9rem;'>Toxic posts are shielded behind a blur so users aren't exposed to sudden harassment.</p>", unsafe_allow_html=True)
 
         try:
-            simulated_posts = api_client.get_simulated_posts()
+            simulated_posts = cached_get_simulated_posts()
         except ApiError as e:
             simulated_posts = []
             st.error(f"❌ Could not load simulated posts from backend: {e.message}")
@@ -1466,19 +1483,19 @@ elif page == "📚 Safety Guide":
     col1, col2 = st.columns([7, 5])
 
     try:
-        cyber_laws = api_client.get_cyber_laws()
+        cyber_laws = cached_get_cyber_laws()
     except ApiError as e:
         cyber_laws = []
         st.error(f"❌ Could not load cyber laws: {e.message}")
 
     try:
-        helplines = api_client.get_helplines()
+        helplines = cached_get_helplines()
     except ApiError as e:
         helplines = []
         st.error(f"❌ Could not load helplines: {e.message}")
 
     try:
-        safety_tips = api_client.get_safety_tips()
+        safety_tips = cached_get_safety_tips()
     except ApiError as e:
         safety_tips = []
         st.error(f"❌ Could not load safety tips: {e.message}")

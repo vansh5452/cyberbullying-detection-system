@@ -5,11 +5,24 @@ Nothing here is hard-coded that should differ between dev and production.
 """
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Get the absolute path of the backend directory (two levels up from app/core)
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+
+
+def resolve_path(path_str: str) -> str:
+    """Helper to resolve relative paths against the backend root directory."""
+    cleaned_path = path_str.lstrip("/").lstrip("\\")
+    path = Path(cleaned_path)
+    if not path.is_absolute():
+        return str((BACKEND_DIR / path).resolve())
+    return str(path)
 
 
 def _split_csv(value: str) -> List[str]:
@@ -23,7 +36,13 @@ class Settings:
     API_V1_PREFIX: str = "/api/v1"
 
     # --- Database ---
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./cyberguard.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    if not DATABASE_URL:
+        # Default to sqlite relative to the backend directory
+        DATABASE_URL = f"sqlite:///{resolve_path('cyberguard.db')}"
+    elif DATABASE_URL.startswith("sqlite:///."):
+        # Convert relative sqlite URL to absolute relative to backend directory
+        DATABASE_URL = f"sqlite:///{resolve_path(DATABASE_URL.replace('sqlite:///.', ''))}"
 
     # --- Auth / JWT ---
     SECRET_KEY: str = os.getenv("SECRET_KEY", "CHANGE_THIS_IN_PRODUCTION")
@@ -31,8 +50,8 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
     # --- ML model (preserves the existing model.py / cyberbullying_model.pkl contract) ---
-    MODEL_PATH: str = os.getenv("MODEL_PATH", "models/cyberbullying_model.pkl")
-    DATASET_PATH: str = os.getenv("DATASET_PATH", "dataset.csv")
+    MODEL_PATH: str = resolve_path(os.getenv("MODEL_PATH", "models/cyberbullying_model.pkl"))
+    DATASET_PATH: str = resolve_path(os.getenv("DATASET_PATH", "dataset.csv"))
 
     # --- CORS ---
     ALLOWED_ORIGINS: List[str] = _split_csv(

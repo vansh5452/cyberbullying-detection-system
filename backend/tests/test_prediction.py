@@ -48,3 +48,27 @@ def test_model_status_endpoint(client):
     assert "model_loaded" in data
     assert "model_type" in data
     assert "fallback_available" in data
+
+
+def test_predict_special_characters(client):
+    resp = client.post("/api/v1/predict", json={"text": "Hello!!! @#$ %^&*()_+ {}|:\"<>? `-=[]\\;,./"})
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["label"] == 0
+
+
+def test_predict_fullwidth_homoglyphs(client):
+    # Fullwidth character representation of 'stupid': ｓｔｕｐｉｄ
+    # Normalized by NFKC into 'stupid' and flagged
+    resp = client.post("/api/v1/predict", json={"text": "you are so ｓｔｕｐｉｄ"})
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["label"] == 1
+    assert "stupid" in data["matched_words"]
+
+
+def test_predict_emoji_handled(client):
+    resp = client.post("/api/v1/predict", json={"text": "Have a nice day! 😊👍"})
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["label"] == 0

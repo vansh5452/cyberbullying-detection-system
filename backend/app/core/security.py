@@ -4,20 +4,28 @@ Password hashing + JWT access token creation/verification.
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    """Hash a password using bcrypt. Returns the hashed password as a string."""
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
-    return pwd_context.verify(plain_password, password_hash)
+    """Verify a plain text password against its hash using bcrypt."""
+    try:
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"),
+            password_hash.encode("utf-8")
+        )
+    except Exception:
+        return False
 
 
 def create_access_token(subject: str, role: str, expires_minutes: Optional[int] = None) -> str:

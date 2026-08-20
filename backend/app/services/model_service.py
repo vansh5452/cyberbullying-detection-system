@@ -16,6 +16,7 @@ import os
 import pickle
 import re
 import threading
+import unicodedata
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -59,13 +60,19 @@ class ModelService:
             self._model_data = None
             return False
 
-        with open(self.model_path, "rb") as f:
-            data = pickle.load(f)
+        try:
+            with open(self.model_path, "rb") as f:
+                data = pickle.load(f)
 
-        with self._lock:
-            self._model_data = data
-        logger.info(f"Model loaded from '{self.model_path}' (accuracy={data.get('accuracy')})")
-        return True
+            with self._lock:
+                self._model_data = data
+            logger.info(f"Model loaded from '{self.model_path}' (accuracy={data.get('accuracy')})")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to load model file at '{self.model_path}': {e}. Using lexicon fallback.")
+            with self._lock:
+                self._model_data = None
+            return False
 
     @property
     def is_loaded(self) -> bool:
@@ -74,9 +81,11 @@ class ModelService:
     # ------------------------------------------------------------ clean_text
     @staticmethod
     def clean_text(text: str) -> str:
-        """Identical to the original model.py clean_text()."""
+        """Clean and normalize the input text (removing special characters, websites, normalization)."""
         if not isinstance(text, str):
             return ""
+        # Normalize Unicode characters (e.g., handles homoglyphs and accents)
+        text = unicodedata.normalize("NFKC", text)
         text = text.lower()
         text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
         text = re.sub(r'[^\w\s]', '', text)
@@ -102,22 +111,26 @@ class ModelService:
                 matched.append(phrase)
         matched = list(set(matched))
 
-        features = vectorizer.transform([cleaned])
+        try:
+            features = vectorizer.transform([cleaned])
 
-        if features.nnz == 0:
-            if len(matched) > 0:
-                prediction = 1
-                confidence = 0.70 + (0.05 * min(len(matched), 5))
-                method = METHOD_FALLBACK
+            if features.nnz == 0:
+                if len(matched) > 0:
+                    prediction = 1
+                    confidence = 0.70 + (0.05 * min(len(matched), 5))
+                    method = METHOD_FALLBACK
+                else:
+                    prediction = 0
+                    confidence = 0.95
+                    method = METHOD_ML
             else:
-                prediction = 0
-                confidence = 0.95
+                prediction = int(model.predict(features)[0])
+                probabilities = model.predict_proba(features)[0]
+                confidence = float(probabilities[prediction])
                 method = METHOD_ML
-        else:
-            prediction = int(model.predict(features)[0])
-            probabilities = model.predict_proba(features)[0]
-            confidence = float(probabilities[prediction])
-            method = METHOD_ML
+        except Exception as e:
+            logger.error(f"Error predicting with ML model, falling back to lexicon rules: {e}")
+            return self._predict_fallback(cleaned)
 
         return {
             'label': int(prediction),

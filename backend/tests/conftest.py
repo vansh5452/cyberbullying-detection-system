@@ -36,4 +36,11 @@ def registered_user(client):
         "email": "teststudent@example.com",
         "password": "SuperSecret123",
     })
-    return resp.json()
+    body = resp.json()
+    if not body.get("success") and body.get("error", {}).get("code") == "USER_EXISTS":
+        login_resp = client.post("/api/v1/auth/login", json={
+            "username": "teststudent",
+            "password": "SuperSecret123",
+        })
+        return login_resp.json()
+    return body

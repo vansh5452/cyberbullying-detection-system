@@ -5,6 +5,7 @@ Frontend -> REST API -> FastAPI Backend -> Prediction Service ->
 Existing ML Model (TF-IDF + Logistic Regression) -> Database / API Response
 """
 import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,15 @@ from app.core.logging import logger
 from app.core.rate_limit import _prune_stale, is_allowed
 from app.db.database import init_db
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    logger.info(f"{settings.APP_NAME} starting up (environment={settings.ENVIRONMENT})")
+    yield
+    logger.info(f"{settings.APP_NAME} shutting down")
+
+
 app = FastAPI(
     title=settings.APP_NAME,
     description="AI-Powered Cyberbullying Detection System - REST API backend "
@@ -24,6 +34,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -36,10 +47,6 @@ app.add_middleware(
 
 
 # ---------------------------------------------------------------- lifecycle
-@app.on_event("startup")
-def on_startup():
-    init_db()
-    logger.info(f"{settings.APP_NAME} starting up (environment={settings.ENVIRONMENT})")
 
 
 # ------------------------------------------------------------ error handlers
