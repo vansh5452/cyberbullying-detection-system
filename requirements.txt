@@ -1,7 +1,7 @@
-streamlit==1.38.0
-requests==2.32.3
-pandas==2.2.3
-numpy==2.1.2
-plotly==5.24.1
-streamlit-audiorecorder==0.0.5
-SpeechRecognition==3.10.4
+streamlit>=1.38.0
+requests>=2.32.3
+pandas>=2.2.0
+numpy>=1.24.0
+plotly>=5.24.0
+streamlit-audiorecorder>=0.0.5
+SpeechRecognition>=3.10.0
