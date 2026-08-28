@@ -105,9 +105,9 @@ st.markdown("""
         color: var(--text) !important;
     }
 
-    p, li, span, label, .stText, .stMarkdown, ol, ul, select, input, textarea {
+    p, li, span, label, .stText, .stMarkdown, ol, ul, select {
         font-family: 'Inter', sans-serif !important;
-        color: var(--text-secondary) !important;
+        color: #CBD5E1 !important;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -393,7 +393,7 @@ st.markdown("""
         background: rgba(255,255,255,0.05) !important;
         border: 1px solid rgba(255,255,255,0.12) !important;
         border-radius: 14px !important;
-        color: var(--text) !important;
+        color: #F8FAFC !important;
         font-family: 'Inter', sans-serif !important;
     }
     .stTextArea textarea { border-radius: 16px !important; }
