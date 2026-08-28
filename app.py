@@ -1044,102 +1044,7 @@ elif page == "🔍 AI Detector":
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- Voice recorder card, with orb + waveform animation ---
-        st.markdown("<div class='panel'>", unsafe_allow_html=True)
-        st.markdown("<div class='panel-title'>🎙️ Voice Input Scanner</div>", unsafe_allow_html=True)
-        st.markdown("<div class='panel-sub'>Tap the recorder, speak your message, then tap stop to scan it.</div>", unsafe_allow_html=True)
-        st.markdown("""
-        <div class="mic-orb-wrap">
-            <div class="mic-orb">
-                <div class="mic-orb-ring r1"></div>
-                <div class="mic-orb-ring r2"></div>
-                <div class="mic-orb-core">🎙️</div>
-            </div>
-            <p class="voice-hint">Ready to listen — use the recorder below</p>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("<p style='font-size: 0.74rem; color: #FBBF24; text-align:center;'>⚠️ Browsers require a secure context (<code>localhost</code> or <code>https://</code>) to access the microphone.</p>", unsafe_allow_html=True)
 
-        from audiorecorder import audiorecorder
-        import speech_recognition as sr
-        import io
-
-        if 'recorder_key' not in st.session_state:
-            st.session_state.recorder_key = 1
-
-        audio_data_obj = audiorecorder("", "", key=f"recorder_{st.session_state.recorder_key}")
-
-        if len(audio_data_obj) > 0:
-            wav_io = io.BytesIO()
-            audio_data_obj.export(wav_io, format="wav")
-            wav_io.seek(0)
-
-            audio_bytes = wav_io.read()
-            audio_id = hash(audio_bytes)
-            wav_io.seek(0)
-
-            if 'last_processed_audio_id' not in st.session_state or st.session_state.last_processed_audio_id != audio_id:
-                st.session_state.last_processed_audio_id = audio_id
-
-                try:
-                    recognizer = sr.Recognizer()
-                    with sr.AudioFile(wav_io) as source:
-                        audio_data = recognizer.record(source)
-
-                    waveform_slot = st.empty()
-                    waveform_slot.markdown("""
-                    <div style='text-align:center;'>
-                        <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
-                        <p class="voice-hint">Decoding voice message...</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    voice_text = recognizer.recognize_google(audio_data)
-                    waveform_slot.empty()
-
-                    st.session_state.detector_chatbot_messages.append({"role": "user", "content": f"🎤 Voice Message: \"{voice_text}\""})
-
-                    voice_result, voice_api_error = None, None
-                    try:
-                        voice_result = api_client.predict_message(voice_text)
-                    except ApiError as e:
-                        voice_api_error = e
-
-                    if voice_api_error:
-                        st.session_state.recorder_key += 1
-                        st.error(f"❌ Backend error: {voice_api_error.message}")
-                    else:
-                        log_scan_stats(voice_result['label'])
-
-                        if voice_result['label'] == 1:
-                            bot_reply = "🚨 This voice message was flagged as potential cyberbullying. Stay calm, don't reply, and talk to a trusted adult."
-                        else:
-                            bot_reply = "🟢 This voice message looks safe and friendly!"
-
-                        st.session_state.detector_chatbot_messages.append({"role": "assistant", "content": bot_reply})
-
-                        st.session_state.last_scanned_result = {
-                            "text": f"🎤 Voice: \"{voice_text}\"",
-                            "label": voice_result['label'],
-                            "confidence": voice_result['confidence'],
-                            "method": f"{voice_result['method']} (Speech-to-Text)",
-                            "matched_words": voice_result['matched_words'],
-                            "category": voice_result['category'],
-                            "severity": voice_result['severity'],
-                            "elapsed_ms": None
-                        }
-                        st.session_state.recorder_key += 1
-                        st.rerun()
-                except sr.UnknownValueError:
-                    st.session_state.recorder_key += 1
-                    st.warning("🎙️ Could not understand the voice audio. Please speak clearly and try again.")
-                except sr.RequestError as e:
-                    st.session_state.recorder_key += 1
-                    st.error(f"🌐 API Connection Error: {e}")
-                except Exception as e:
-                    st.session_state.recorder_key += 1
-                    st.error(f"❌ System Error ({type(e).__name__}): {e}")
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
         # Recent conversation log
         if len(st.session_state.detector_chatbot_messages) > 1:
@@ -1380,27 +1285,7 @@ elif page == "📊 Analytics":
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("<div class='glass-card'><div class='card-title'>🛠️ Model Controller</div>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size:0.8rem; color:#94A3B8;'>Retraining is admin-only. Log in as an admin account and paste your access token below.</p>", unsafe_allow_html=True)
-        st.session_state.admin_token = st.text_input(
-            "Admin access token", value=st.session_state.admin_token or "", type="password",
-            placeholder="Paste the JWT from /api/v1/auth/login for an admin account"
-        )
-
-        if st.button("Retrain Model", type="primary", use_container_width=True):
-            if not st.session_state.admin_token:
-                st.warning("⚠️ Enter an admin access token first.")
-            else:
-                with st.spinner("Preprocessing text → Computing TF-IDF matrix → Fitting Logistic Regression..."):
-                    try:
-                        retrain_result = api_client.retrain_model(st.session_state.admin_token)
-                        st.session_state.model_trained = True
-                        st.success(f"🎉 Model trained successfully! Accuracy: {retrain_result['accuracy']*100:.2f}%")
-                        st.balloons()
-                        st.rerun()
-                    except ApiError as e:
-                        st.error(f"Training failed: {e.message}")
-
+        st.markdown("<div class='glass-card'><div class='card-title'>🧠 Model Status</div>", unsafe_allow_html=True)
         try:
             model_status = api_client.get_model_status()
         except ApiError:
@@ -1409,7 +1294,7 @@ elif page == "📊 Analytics":
         if model_status.get("model_loaded") and model_status.get("accuracy") is not None:
             st.metric("Trained Model Accuracy", f"{model_status['accuracy'] * 100:.2f}%", help="Calculated using a standard 20% test-split.")
         else:
-            st.info("🧠 Model file not found. Click Retrain above.")
+            st.info("🧠 Model file not found on the server.")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col2:
