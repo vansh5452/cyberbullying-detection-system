@@ -6,7 +6,7 @@ Nothing here is hard-coded that should differ between dev and production.
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 
@@ -73,6 +73,9 @@ class Settings:
     ADMIN_SETUP_KEY: str = os.getenv("ADMIN_SETUP_KEY", "")
     # --- Server ---
     PORT: int = int(os.getenv("PORT", "8000"))
+
+    # --- Gemini API ---
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
 
     @property
     def is_production(self) -> bool:
