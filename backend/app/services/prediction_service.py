@@ -7,7 +7,7 @@ frontend (app.py's `categorize()` function) so both the /predict and
 """
 from typing import Dict, List, Optional, Tuple
 import json
-import requests
+import httpx
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -60,7 +60,7 @@ def predict_with_gemini(text: str) -> Optional[Dict]:
     }
 
     try:
-        resp = requests.post(url, json=payload, timeout=10)
+        resp = httpx.post(url, json=payload, timeout=10.0)
         if resp.status_code != 200:
             logger.error(f"Gemini API returned error code {resp.status_code}: {resp.text}")
             return None
